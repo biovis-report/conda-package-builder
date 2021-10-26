@@ -134,21 +134,3 @@ for i in "${array[@]}"
 do
 	conda build --python "$i" "$recipe_dir" --no-anaconda-upload --output-folder "$conda_dir";
 done
-
-# convert package to other platforms
-platforms=( osx-64 linux-64 win-64 )
-dest_dir=$(dirname $conda_dir)
-
-find "$conda_dir" -name *.tar.bz2 | grep "$pkg_name" | while read file
-do
-    echo "$file"
-    #conda convert --platform all $file -o $HOME/conda-bld/
-    for platform in "${platforms[@]}"
-    do
-       conda convert --platform "$platform" "$file" -o "$dest_dir"
-    done    
-done
-
-echo "Building conda package done!"
-
-echo "Get all files from $dest_dir"
