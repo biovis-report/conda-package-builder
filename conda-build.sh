@@ -79,7 +79,9 @@ if [ -z "$platform" ]; then
 fi
 
 if [ -z "$conda_dir" ]; then
-    conda_dir="$PWD/$platform"
+    SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+    conda_dir="$SCRIPT_DIR/conda-build"
+    mkdir -p "$conda_dir"
 fi
 
 if [ "$mode" == 'pypi' ]; then
@@ -126,12 +128,11 @@ if [ "$enable_build_file" == 'yes' ]; then
     fi
 fi
 
-cd ../
 array=( 3.6 3.7 3.8 3.9 3.10 )
 # building conda packages
 for i in "${array[@]}"
 do
-	conda build --python "$i" "$recipe_dir";
+	conda build --python "$i" "$recipe_dir" --no-anaconda-upload --output-folder "$conda_dir";
 done
 
 # convert package to other platforms
