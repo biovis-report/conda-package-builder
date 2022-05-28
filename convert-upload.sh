@@ -8,10 +8,11 @@ cat << EOF
 usage: $(echo $0) [-c <conda_dir>] [-u <username>]
        -c conda_dir: The root directory of conda building.
        -u username: Which account do you want to upload.
+       -U upload: whether to upload?
 EOF
 }
 
-while getopts ":hc:u:" arg
+while getopts ":hc:u:U" arg
 do
     case "$arg" in
         "c")
@@ -19,6 +20,9 @@ do
         ;;
         "u")
             username="$OPTARG"
+        ;;
+        "U")
+            upload=true
         ;;
         "?")
             echo "Unkown option: $OPTARG"
@@ -71,18 +75,21 @@ do
     done
 done
 
+conda index "$conda_dir"
 echo "Building conda package done!"
 
-echo "Uploading all packages to anaconda.org..."
+if [ ! -z "$upload" ]; then
+    echo "Uploading all packages to anaconda.org..."
 
-find "$conda_dir" -name *.tar.bz2 | while read file
-do
-    echo "$file"
-    if [ -z "$username" ];then
-        anaconda upload "$file"
-    else
-        anaconda upload -u "$username" "$file" --skip
-    fi
-done
+    find "$conda_dir" -name *.tar.bz2 | while read file
+    do
+        echo "$file"
+        if [ -z "$username" ];then
+            anaconda upload "$file"
+        else
+            anaconda upload -u "$username" "$file" --skip
+        fi
+    done
+fi
 
 echo "Get all files from $conda_dir"

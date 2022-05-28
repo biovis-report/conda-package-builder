@@ -1,4 +1,12 @@
-# Conda Package Buider
+<h2 align="center">Conda Builder</h2>
+<p align="center">package/upload files to anaconda</p>
+
+<p align="center">Jingcheng Yang [yjcyxky@163.com]</p>
+
+<p align="center">
+<img src="https://github.com/biovis-report/conda-package-builder/workflows/.github/workflows/test.yml/badge.svg" alt="Build Status">
+<img src="https://img.shields.io/github/license/biovis-report/conda-package-builder.svg" alt="License">
+</p>
 
 ## How to build the conda package?
 1. Python package on pypi.org

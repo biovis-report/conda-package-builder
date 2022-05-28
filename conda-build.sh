@@ -2,7 +2,7 @@
 # change the package name to the existing PyPi package you would like to build
 
 set -o pipefail
-set -e
+# set -e
 
 show_help(){
 cat << EOF
@@ -10,7 +10,7 @@ usage: $(echo $0) [-m <mode>] [-p <pkg_name>] [-P <platform>] [-d <conda_dir>] [
        -m mode: Running mode, e.g. local, pypi, cran.
        -p pkg_name: package name.
        -V pkg_version: package version.
-       -P platfrom: e.g. osx-64 linux-32 linux-64 win-32 win-64
+       -P platfrom: e.g. osx-64 linux-64 win-64
        -d conda build directory: e.g. $HOME/miniconda3/conda-bld/osx-64
        -b enable download build file.
 EOF
@@ -128,9 +128,17 @@ if [ "$enable_build_file" == 'yes' ]; then
     fi
 fi
 
-array=( 3.6 3.7 3.8 3.9 3.10 )
+array=( 3.7 3.8 3.9 3.10 )
 # building conda packages
 for i in "${array[@]}"
 do
-	conda build --python "$i" "$recipe_dir" --no-anaconda-upload --output-folder "$conda_dir";
+    echo "Build conda packages for Python$i"
+    which mamba
+    if [ "$?" == "0" ];then
+        echo "Running with mamba"
+        mamba build --python "$i" "$recipe_dir" --no-anaconda-upload --output-folder "$conda_dir"
+    else
+        echo "Running with conda"
+        conda build --python "$i" "$recipe_dir" --no-anaconda-upload --output-folder "$conda_dir"
+    fi
 done
