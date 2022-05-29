@@ -11,12 +11,15 @@ usage: $(echo $0) [-m <mode>] [-p <pkg_name>] [-P <platform>] [-d <conda_dir>] [
        -p pkg_name: package name.
        -V pkg_version: package version.
        -P platfrom: e.g. osx-64 linux-64 win-64
+       -t token
+       -u username
+       -e which python version? 3.7/3.8/3.9/3.10
        -d conda build directory: e.g. $HOME/miniconda3/conda-bld/osx-64
        -b enable download build file.
 EOF
 }
 
-while getopts ":hbm:p:P:d:V:" arg
+while getopts ":hbm:p:P:d:V:t:u:e:" arg
 do
 	case "$arg" in
 		"m")
@@ -24,6 +27,15 @@ do
 			;;
         "V")
             pkg_version="$OPTARG"
+            ;;
+        "t")
+            token="$OPTARG"
+            ;;
+        "e")
+            python="$OPTARG"
+            ;;
+        "u")
+            user="$OPTARG"
             ;;
         "b")
             enable_build_file='yes'
@@ -58,6 +70,11 @@ done
 
 if [ -z "$pkg_name" ]; then
     echo "You must specify a package name using -p argument."
+    exit 1
+fi
+
+if [ -z "$python" ]; then
+    echo "You must specify a python version using -e argument."
     exit 1
 fi
 
@@ -128,17 +145,20 @@ if [ "$enable_build_file" == 'yes' ]; then
     fi
 fi
 
-array=( 3.7 3.8 3.9 3.10 )
-# building conda packages
-for i in "${array[@]}"
-do
-    echo "Build conda packages for Python$i"
-    which mamba
-    if [ "$?" == "0" ];then
-        echo "Running with mamba"
-        mamba build --python "$i" "$recipe_dir" --no-anaconda-upload --output-folder "$conda_dir"
+echo "Build conda packages for Python$i"
+which mamba
+if [ "$?" == "0" ];then
+    echo "Running with mamba"
+    if [ ! -z "$token" ]; then
+        mamba build --python "$python" "$recipe_dir" --token "$token" --user "$user" --skip-existing --output-folder "$conda_dir"
     else
-        echo "Running with conda"
-        conda build --python "$i" "$recipe_dir" --no-anaconda-upload --output-folder "$conda_dir"
+        mamba build --python "$python" "$recipe_dir" --no-anaconda-upload --output-folder "$conda_dir"
     fi
-done
+else
+    echo "Running with conda"
+    if [ ! -z "$token" ]; then
+        conda build --python "$python" "$recipe_dir" --token "$token" --user "$user" --skip-existing --output-folder "$conda_dir"
+    else
+        conda build --python "$python" "$recipe_dir" --no-anaconda-upload --output-folder "$conda_dir"
+    fi
+fi

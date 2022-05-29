@@ -1,0 +1,40 @@
+name: release-package
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - master    
+
+jobs:
+  release-package:
+    name: Run (${{ matrix.python-version }}, ${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest", "macos-latest", "windows-latest"]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          mamba-version: "*"
+          channels: biovis-report,conda-forge,bioconda,defaults
+          channel-priority: true
+          auto-update-conda: true
+          python-version: ${{ matrix.python-version }}
+      - name: Install conda-build
+        shell: bash -l {0}
+        # Error: expected str, bytes or os.PathLike object, not list
+        # More details on https://github.com/conda/conda-build/issues/4222
+        run: mamba install conda-build anaconda-client
+      - name: Package & Release configr
+        shell: bash -l {0}
+        run: bash conda-build.sh -m cran -p configr -V 0.3.4 -t ${{ secrets.ANACONDA_TOKEN }} -u biovis-report -e ${{ matrix.python-version }} -d build
+      - name: Package & Release mutsneedle
+        shell: bash -l {0}
+        run: bash conda-build.sh -m cran -p mutsneedle -V 0.1.1 -t ${{ secrets.ANACONDA_TOKEN }} -u biovis-report -e ${{ matrix.python-version }} -d build
+      - name: Package & Release scatterd3
+        shell: bash -l {0}
+        run: bash conda-build.sh -m cran -p scatterd3 -V 0.8.2 -t ${{ secrets.ANACONDA_TOKEN }} -u biovis-report -e ${{ matrix.python-version }} -d build
