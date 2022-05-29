@@ -6,7 +6,7 @@ set -o pipefail
 
 show_help(){
 cat << EOF
-usage: $(echo $0) [-m <mode>] [-p <pkg_name>] [-P <platform>] [-d <conda_dir>] [-b] [-V <pkg_version>]
+usage: $(echo $0) [-m <mode>] [-p <pkg_name>] [-V <version>] [-P <platform>] [-t <token>] [-u <username>] [-e <py_version>] [-d <conda_dir>] [-b]
        -m mode: Running mode, e.g. local, pypi, cran.
        -p pkg_name: package name.
        -V pkg_version: package version.
@@ -145,7 +145,7 @@ if [ "$enable_build_file" == 'yes' ]; then
     fi
 fi
 
-echo "Build conda packages for Python$i"
+echo "Build conda packages for Python$python"
 which mamba
 if [ "$?" == "0" ];then
     echo "Running with mamba"
