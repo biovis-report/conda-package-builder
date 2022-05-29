@@ -64,7 +64,7 @@ about:
     file. The functionality of this package is similar to that of package 'config'.
   license_family: MIT
   license_file:
-    - '{{ environ["PREFIX"] }}/lib/R/share/licenses/MIT'
+    # - '{{ environ["PREFIX"] }}/lib/R/share/licenses/MIT'
     - '{{ environ["RECIPE_DIR"] }}/LICENSE'
 
 # The original CRAN metadata for this package was:
