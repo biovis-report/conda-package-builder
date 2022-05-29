@@ -31,10 +31,7 @@ jobs:
         run: mamba install conda-build anaconda-client
       - name: Package & Release configr
         shell: bash -l {0}
-        run: bash conda-build.sh -m cran -p configr -V 0.3.4 -t ${{ secrets.ANACONDA_TOKEN }} -u biovis-report -e ${{ matrix.python-version }} -d build
-      - name: Package & Release mutsneedle
-        shell: bash -l {0}
-        run: bash conda-build.sh -m cran -p mutsneedle -V 0.1.1 -t ${{ secrets.ANACONDA_TOKEN }} -u biovis-report -e ${{ matrix.python-version }} -d build
+        run: bash conda-build.sh -m local -p repo/r-configr-0.3.4 -t ${{ secrets.ANACONDA_TOKEN }} -u biovis-report -e ${{ matrix.python-version }} -d build
       - name: Package & Release scatterd3
         shell: bash -l {0}
-        run: bash conda-build.sh -m cran -p scatterd3 -V 0.8.2 -t ${{ secrets.ANACONDA_TOKEN }} -u biovis-report -e ${{ matrix.python-version }} -d build
+        run: bash conda-build.sh -m local -p repo/r-scatterd3-0.8.2 -t ${{ secrets.ANACONDA_TOKEN }} -u biovis-report -e ${{ matrix.python-version }} -d build
